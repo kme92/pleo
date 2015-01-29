@@ -24,25 +24,39 @@ public init()
 public main()
 {
     print("main::main() enter\n");
+    
     for(;;)
     {
+        moveHead(JOINT_NECK_VERTICAL, -45);
+        moveHead(JOINT_NECK_HORIZONTAL, 0);
+        new frontEdgeReading = sensor_get_value(SENSOR_OBJECT);
 
-moveHead(JOINT_NECK_VERTICAL, -50);
-moveHead(JOINT_NECK_HORIZONTAL, 0);
-new frontEdgeReading = sensor_get_value(SENSOR_OBJECT);
+        moveHead(JOINT_NECK_HORIZONTAL, 65);
+        new rightEdgeReading = sensor_get_value(SENSOR_OBJECT);
 
-    if(frontEdgeReading < 60)
+        moveHead(JOINT_NECK_HORIZONTAL, -65);
+        new leftEdgeReading = sensor_get_value(SENSOR_OBJECT);
+
+        if (frontEdgeReading < 50)
 	{
-	moveHead(JOINT_NECK_HORIZONTAL, 65);
-	new rightEdgeReading = sensor_get_value(SENSOR_OBJECT);
-	
-	if(rightEdgeReading < 40) { turnLeft(); }
-	else {turnRight();}
-		
-	}
-else {
-	     walkForward();
-}
+	    moveHead(JOINT_NECK_HORIZONTAL, 65);
+	    rightEdgeReading = sensor_get_value(SENSOR_OBJECT);
+	    moveHead(JOINT_NECK_HORIZONTAL, -65);
+	    leftEdgeReading = sensor_get_value(SENSOR_OBJECT);
+
+	    if(rightEdgeReading < 60)
+            {
+                backLeft();
+            } 
+            else if (leftEdgeReading < 60)
+            {
+                backRight();
+            }
+	} 
+        else 
+        {
+            walkForward();
+        }
 
 }
 
@@ -57,57 +71,54 @@ moveHead(direction, degrees)
 //degrees horizontal: 50 to -50
 
 joint_move_to(direction, degrees, 128, angle_degrees);
-}
 
-turnLeft() {
-
-motion_play(mot_com_walk_fl_short);
-while (motion_is_playing(mot_com_walk_fl_short))
-            {
-                sleep;
-            }
-
-/*new rightEdgeReading = sensor_get_value(SENSOR_OBJECT);
-while(rightEdgeReading < 40)
+while(joint_is_moving(direction))
 	{
-motion_play(mot_com_walk_fl_short);
-while (motion_is_playing(mot_com_walk_fl_short))
-            {
-                sleep;
-            }
-moveHead(JOINT_NECK_HORIZONTAL, 0);
-rightEdgeReading = sensor_get_value(SENSOR_OBJECT);
-	}*/
-
-}
-
-turnRight() {
-
-motion_play(mot_com_walk_fr_short);
-while (motion_is_playing(mot_com_walk_fr_short))
-            {
-                sleep;
-            }
-
-/*new leftEdgeReading = sensor_get_value(SENSOR_OBJECT);
-while(leftEdgeReading < 40)
-	{
-motion_play(mot_com_walk_fr_short);
-while (motion_is_playing(mot_com_walk_fr_short))
-            {
-                sleep;
-            }
-moveHead(JOINT_NECK_HORIZONTAL, 0);
-leftEdgeReading = sensor_get_value(SENSOR_OBJECT);
+	sleep;
 	}
-*/
+}
 
+backLeft() {
+motion_play(mot_com_walk_br_2a);
+while (motion_is_playing(mot_com_walk_br_2a))
+            {
+                sleep;
+            }
+
+motion_play(mot_com_walk_fl_short);
+while (motion_is_playing(mot_com_walk_fl_short))
+            {
+                sleep;
+            }
+}
+
+backRight() {
+motion_play(mot_com_walk_bl_2a);
+while (motion_is_playing(mot_com_walk_bl_2a))
+            {
+                sleep;
+            }
+
+motion_play(mot_com_walk_fr_short);
+while (motion_is_playing(mot_com_walk_fr_short))
+            {
+                sleep;
+            }
 }
 
 walkForward() 
 {
 motion_play(mot_com_walk_fs);
 while (motion_is_playing(mot_com_walk_fs))
+            {
+                sleep;
+            }
+}
+
+walkBackward()
+{
+motion_play(mot_com_walk_bs);
+while (motion_is_playing(mot_com_walk_bs))
             {
                 sleep;
             }
