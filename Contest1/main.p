@@ -12,7 +12,8 @@
 #include <Joint.inc>
 
 #include "motions.inc"
- 
+
+public hasSetup;
 
 public init()
 {
@@ -25,30 +26,59 @@ public main()
 {
     print("main::main() enter\n");
     
-    for(;;)
-    {
-        moveHead(JOINT_NECK_VERTICAL, -45);
-        moveHead(JOINT_NECK_HORIZONTAL, 0);
-        new frontEdgeReading = sensor_get_value(SENSOR_OBJECT);
-
+    //initial setup
+    while (hasSetup == false) {
+	goNeutralPosition();
+	moveHead(JOINT_NECK_VERTICAL, -35);
+	
+        moveHead(JOINT_TORSO, 15);
         moveHead(JOINT_NECK_HORIZONTAL, 65);
         new rightEdgeReading = sensor_get_value(SENSOR_OBJECT);
+        
+        moveHead(JOINT_TORSO, 0);
 
-        moveHead(JOINT_NECK_HORIZONTAL, -65);
+        moveHead(JOINT_TORSO, -15);
+	moveHead(JOINT_NECK_HORIZONTAL, -65);
         new leftEdgeReading = sensor_get_value(SENSOR_OBJECT);
+
+        if (rightEdgeReading < leftEdgeReading) {
+            frontLeft();
+            frontLeft();
+            frontLeft();
+            walkForward();
+            walkForward();
+            
+        } else {
+            frontRight();
+            frontRight();
+            frontRight();
+            walkForward();
+            walkForward();
+        }
+        hasSetup = true;
+        goNeutralPosition();
+    }
+
+
+   /*
+    for(;;)
+    {
+        moveHead(JOINT_NECK_VERTICAL, -30);
+        moveHead(JOINT_NECK_HORIZONTAL, 0);
+        new frontEdgeReading = sensor_get_value(SENSOR_OBJECT);
 
         if (frontEdgeReading < 50)
 	{
 	    moveHead(JOINT_NECK_HORIZONTAL, 65);
-	    rightEdgeReading = sensor_get_value(SENSOR_OBJECT);
-	    moveHead(JOINT_NECK_HORIZONTAL, -65);
-	    leftEdgeReading = sensor_get_value(SENSOR_OBJECT);
-
-	    if(rightEdgeReading < 60)
+	    new rightEdgeReading = sensor_get_value(SENSOR_OBJECT);
+            if(rightEdgeReading < 60)
             {
                 backLeft();
             } 
-            else if (leftEdgeReading < 60)
+
+	    moveHead(JOINT_NECK_HORIZONTAL, -65);
+	    new leftEdgeReading = sensor_get_value(SENSOR_OBJECT);
+            if (leftEdgeReading < 60)
             {
                 backRight();
             }
@@ -58,10 +88,19 @@ public main()
             walkForward();
         }
 
-}
+    }*/
+
 
     // left in, this generates an 'unreachable code' Pawn warning
     //print("main::main() exit\n");
+}
+
+goNeutralPosition() {
+    motion_play(mot_neutral);
+    
+    while (motion_is_playing(mot_neutral)) {
+        sleep;
+    }
 }
 
 moveHead(direction, degrees)
@@ -76,20 +115,33 @@ while(joint_is_moving(direction))
 	{
 	sleep;
 	}
+
+}
+
+frontLeft() {
+    motion_play(mot_com_walk_fl_2a);
+    while (motion_is_playing(mot_com_walk_fl_2a)) {
+        sleep;
+    }
+}
+
+frontRight() {
+    motion_play(mot_com_walk_fr_2a);
+    while (motion_is_playing(mot_com_walk_fr_2a)) {
+        sleep;
+    }
 }
 
 backLeft() {
-motion_play(mot_com_walk_br_2a);
-while (motion_is_playing(mot_com_walk_br_2a))
-            {
-                sleep;
-            }
+    motion_play(mot_com_walk_br_2a);
+    while (motion_is_playing(mot_com_walk_br_2a)) {
+        sleep;
+    }
 
-motion_play(mot_com_walk_fl_short);
-while (motion_is_playing(mot_com_walk_fl_short))
-            {
-                sleep;
-            }
+    motion_play(mot_com_walk_fl_short);
+    while (motion_is_playing(mot_com_walk_fl_short)) {
+        sleep;
+    }
 }
 
 backRight() {
