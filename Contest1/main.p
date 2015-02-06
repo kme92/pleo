@@ -10,7 +10,9 @@
 #include <Sensor.inc>
 #include <Motion.inc>
 #include <Joint.inc>
+#include <Sound.inc>
 
+#include "sounds.inc"
 #include "motions.inc"
 
 public hasSetup;
@@ -29,35 +31,106 @@ public main()
     //initial setup
     while (hasSetup == false) {
 	goNeutralPosition();
-	moveHead(JOINT_NECK_VERTICAL, -35);
+	moveHead(JOINT_NECK_VERTICAL, -50);
 	
-        moveHead(JOINT_TORSO, 15);
         moveHead(JOINT_NECK_HORIZONTAL, 65);
         new rightEdgeReading = sensor_get_value(SENSOR_OBJECT);
         
-        moveHead(JOINT_TORSO, 0);
 
-        moveHead(JOINT_TORSO, -15);
 	moveHead(JOINT_NECK_HORIZONTAL, -65);
         new leftEdgeReading = sensor_get_value(SENSOR_OBJECT);
 
         if (rightEdgeReading < leftEdgeReading) {
-            frontLeft();
-            frontLeft();
-            frontLeft();
-            walkForward();
-            walkForward();
-            
-        } else {
-            frontRight();
-            frontRight();
-            frontRight();
-            walkForward();
-            walkForward();
-        }
+	    for(;;)
+		{
+		frontLeft();
+	            moveHead(JOINT_NECK_VERTICAL, 20);
+                    moveHead(JOINT_NECK_HORIZONTAL, 0);
+ 	            new reading = sensor_get_value(SENSOR_OBJECT);
+
+	             if(reading < 20)
+		     {
+		         sound_play(snd_object_gt_0);
+		     }
+	             else if(reading > 20 && reading < 40)
+		     {
+		         sound_play(snd_object_gt_20);
+		     }
+	             else if(reading > 39 && reading < 60)
+		     {
+		         sound_play(snd_object_gt_40);
+		     }
+	             else if(reading > 59 && reading < 80)
+		     {
+		         sound_play(snd_object_gt_60);
+		     }
+	             else if(reading > 79 && reading < 100)
+		     {
+		         sound_play(snd_object_gt_80);
+		     }
+	             else
+		     {
+		         sound_play(snd_object_100);
+		     }
+
+	             if(reading > 40)
+	             {
+                         walkForward();	             
+			}
+	             else
+	             {
+		         frontLeft();
+	             }
+		}  
+        } 
+	else
+	{
+	for(;;)
+		{
+		frontRight();
+	            moveHead(JOINT_NECK_VERTICAL, 20);
+                    moveHead(JOINT_NECK_HORIZONTAL, 0);
+ 	            new reading = sensor_get_value(SENSOR_OBJECT);
+
+	             if(reading < 20)
+		     {
+		         sound_play(snd_object_gt_0);
+		     }
+	             else if(reading > 20 && reading < 40)
+		     {
+		         sound_play(snd_object_gt_20);
+		     }
+	             else if(reading > 39 && reading < 60)
+		     {
+		         sound_play(snd_object_gt_40);
+		     }
+	             else if(reading > 59 && reading < 80)
+		     {
+		         sound_play(snd_object_gt_60);
+		     }
+	             else if(reading > 79 && reading < 100)
+		     {
+		         sound_play(snd_object_gt_80);
+		     }
+	             else
+		     {
+		         sound_play(snd_object_100);
+		     }
+
+	             if(reading > 40)
+	             {
+                         walkForward();	             
+			}
+	             else
+	             {
+		         frontRight();
+	             }
+		}  
+	}
+
         hasSetup = true;
-        goNeutralPosition();
-    }
+        //goNeutralPosition();
+   }
 
 
    /*
@@ -160,8 +233,8 @@ while (motion_is_playing(mot_com_walk_fr_short))
 
 walkForward() 
 {
-motion_play(mot_com_walk_fs);
-while (motion_is_playing(mot_com_walk_fs))
+motion_play(mot_com_walk_fs_new);
+while (motion_is_playing(mot_com_walk_fs_new))
             {
                 sleep;
             }
@@ -175,6 +248,7 @@ while (motion_is_playing(mot_com_walk_bs))
                 sleep;
             }
 }
+
 
 public close()
 {
