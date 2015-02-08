@@ -1,0 +1,57 @@
+<upf_project name="sound_command">
+
+  <options>
+    <set name="top" value="../.."/>
+    <include value="./include:${top}/include"/>
+    <tools>
+     <pawn value="../../bin/pawncc33 %i -O2 -V8192 -v2 -S128 -C- %I -o%o" />
+    </tools>
+    <directories>
+      <build value="build"/>
+      <include value="include"/>
+    </directories>
+    <umf value="3" />
+    <folders />
+  </options>
+
+  <set-default name="MEDIA" value="../../media"/>
+
+  <set name="SOUNDS" value="${MEDIA}/sounds"/>
+  <set name="MOTIONS" value="${MEDIA}/motions"/>
+  <set name="COMMANDS" value="${MEDIA}/commands"/>
+  <set name="SCRIPTS" value="${MEDIA}/scripts"/>
+
+  <resources>
+
+	<!-- Sounds -->
+	<sound path="${SOUNDS}/ang_014.wav"/>
+	<sound path="${SOUNDS}/ang_016.wav"/>
+	<sound path="${SOUNDS}/bor_016.wav"/>
+	<sound path="${SOUNDS}/fat_014.wav"/>
+	<sound path="${SOUNDS}/hun_004.wav"/>
+	<sound path="${SOUNDS}/hun_005.wav"/>
+	<sound path="${SOUNDS}/hun_011.wav"/>
+	<sound path="${SOUNDS}/s3_grunt01.wav"/>
+	<sound path="${SOUNDS}/s3_grunt02.wav"/>
+	<sound path="${SOUNDS}/s3_grunt03.wav"/>
+	<sound path="${SOUNDS}/s3_grunt04.wav"/>
+	<sound path="${SOUNDS}/sq1_grunt01.wav"/>
+	<sound path="${SOUNDS}/sq1_snort05.wav"/>
+	<sound path="${SOUNDS}/sur_001.wav"/>
+
+	<!-- Motions -->
+<!--    <motion path="${MOTIONS}/bow.csv" /> -->
+
+	<!-- Commands -->
+<!--    <command path="${COMMANDS}/snd_excited.csv" /> -->
+    <command path="${COMMANDS}/snd_grunt.csv" />
+
+	<!-- Scripts -->
+    <script path="sensors.p" />
+<!--    <script path="main.p" /> -->
+
+	<!-- User Properties -->
+    <user_property path="my_prop" />
+
+  </resources>
+</upf_project>

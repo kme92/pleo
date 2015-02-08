@@ -1,0 +1,42 @@
+<upf_project name="props_example">
+
+  <options>
+    <set name="top" value="../.." />
+    <include value="./include:${top}/include" />
+    <tools>
+     <pawn value="../../bin/pawncc33 %i -O2 -V8192 -v2 -S128 -C- %I -o%o" />
+    </tools>
+    <directories>
+      <build value="build" />
+      <include value="include" />
+    </directories>
+    <umf value="3" />
+    <folders />
+  </options>
+
+  <set-default name="MEDIA" value="../../media" />
+
+  <set name="SOUNDS" value="${MEDIA}/sounds" />
+  <set name="MOTIONS" value="${MEDIA}/motions" />
+  <set name="COMMANDS" value="${MEDIA}/commands" />
+  <set name="SCRIPTS" value="${MEDIA}/scripts" />
+
+  <resources>
+
+    <!-- Sounds -->
+    <sound path="${SOUNDS}/moo.wav" />
+    <sound path="${SOUNDS}/kisses.wav" />
+
+    <!-- Motions -->
+    <motion path="${MOTIONS}/kiss.csv" />
+
+    <!-- User Properties -->
+    <user_property path="head_held" />
+    <user_property path="head_tapped" />
+
+    <!-- Scripts -->
+    <script path="main.p" />
+    <script path="sensors.p" />
+
+  </resources>
+</upf_project>

@@ -1,0 +1,34 @@
+<upf_project name="file_example">
+
+  <options>
+    <set name="top" value="../.." />
+    <include value="./include:${top}/include" />
+    <tools>
+     <pawn value="../../bin/pawncc33 %i -O2 -V8192 -v2 -S128 -C- %I -o%o" />
+    </tools>
+    <directories>
+      <build value="build" />
+      <include value="include" />
+    </directories>
+    <sound adpcm="true" />
+    <motion version="3" />
+    <folders />
+  </options>
+
+  <set-default name="MEDIA" value="../../media" />
+
+  <set name="SOUNDS" value="${MEDIA}/sounds" />
+  <set name="MOTIONS" value="${MEDIA}/motions" />
+  <set name="SCRIPTS" value="${MEDIA}/scripts" />
+
+  <resources>
+
+    <!-- Sounds -->
+
+    <!-- Motions -->
+
+    <!-- Scripts -->
+    <script path="main.p" />
+
+  </resources>
+</upf_project>

@@ -1,0 +1,6 @@
+<enum max="32767" min="4096" name="sound" namesoff="true" short="snd">
+  <e id=" 4096" name="fat_039" />
+  <e id=" 4097" name="fat_045" />
+  <e id=" 4098" name="fat_053" />
+  <e id=" 4099" name="s3_grunt04" />
+</enum>

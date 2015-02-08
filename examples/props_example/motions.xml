@@ -1,0 +1,3 @@
+<enum max="32767" min="8192" name="motion" namesoff="true" short="mot">
+  <e id=" 8192" name="kiss" />
+</enum>

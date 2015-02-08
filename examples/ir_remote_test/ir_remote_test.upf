@@ -1,0 +1,24 @@
+<upf_project name="sensor">
+  <set-default name="INCLUDES" value="" />
+
+  <options>
+    <include value="./include:../../include"/>
+    <tools>
+      <pawn value="../../bin/pawncc33 %i -O2 -V8192 -v2 -S128 -C- %I -o%o" />
+    </tools>
+    <directories>
+      <build value="build"/>
+      <include value="include"/>
+    </directories>
+  </options>
+
+  <set-default name="MEDIA" value="."/>
+  
+  <set name="COMMANDS" value="${MEDIA}/commands"/>
+  <set name="MOTIONS" value="${MEDIA}/motions"/>
+  <set name="SOUNDS" value="${MEDIA}/sounds"/>
+
+  <resources>
+    <script path="sensors.p"/>
+  </resources>
+</upf_project>

@@ -1,0 +1,8 @@
+Please note the following files should NOT be exported to the SDK:
+
+Animation.inc
+Attention.inc
+Camera.inc ?
+Drive.inc
+Firmware.inc
+Sequence.inc

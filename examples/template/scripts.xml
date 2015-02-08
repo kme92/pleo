@@ -1,0 +1,4 @@
+<enum max="32767" min="16384" name="script" namesoff="true" short="scr">
+  <e id="16384" name="sensors" />
+  <e id="16385" name="main" />
+</enum>

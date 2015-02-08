@@ -1,0 +1,14 @@
+<enum max="32767" min="4096" name="sound" namesoff="true" short="snd">
+  <e id=" 4096" name="growl" />
+  <e id=" 4097" name="stawded" />
+  <e id=" 4098" name="makayla" />
+  <e id=" 4099" name="yes" />
+  <e id=" 4100" name="no" />
+  <e id=" 4101" name="debug0" />
+  <e id=" 4102" name="debug20" />
+  <e id=" 4103" name="debug40" />
+  <e id=" 4104" name="debug60" />
+  <e id=" 4105" name="debug80" />
+  <e id=" 4106" name="debug100" />
+  <e id=" 4107" name="beep" />
+</enum>

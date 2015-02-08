@@ -1,0 +1,40 @@
+<upf_project name="motion_example">
+
+  <options>
+    <set name="top" value="../.." />
+    <include value="./include:${top}/include" />
+    <tools>
+     <pawn value="../../bin/pawncc33 %i -O2 -V8192 -v2 -S128 -C- %I -o%o" />
+    </tools>
+    <directories>
+      <build value="build" />
+      <include value="include" />
+    </directories>
+    <umf value="3" />
+    <folders />
+  </options>
+
+  <set-default name="MEDIA" value="../../media" />
+
+  <set name="SOUNDS" value="${MEDIA}/sounds" />
+  <set name="MOTIONS" value="${MEDIA}/motions" />
+  <set name="COMMANDS" value="${MEDIA}/commands" />
+  <set name="SCRIPTS" value="${MEDIA}/scripts" />
+
+  <resources>
+
+    <!-- Scripts -->
+    <script path="sensors.p" />
+
+    <!-- Sounds -->
+    <sound path="${SOUNDS}/fat_039.wav" />
+    <sound path="${SOUNDS}/fat_045.wav" />
+    <sound path="${SOUNDS}/fat_053.wav" />
+    <sound path="${SOUNDS}/s3_grunt04.wav" />
+
+    <!-- Motions -->
+    <motion path="${MOTIONS}/laydown.csv" />
+    <motion path="${MOTIONS}/nap_getup.csv" />
+
+  </resources>
+</upf_project>

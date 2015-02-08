@@ -1,0 +1,65 @@
+<upf_project name="template">
+
+  <options>
+    <set name="top" value="../.." />
+    <include value="./include:${top}/include" />
+    <tools>
+     <pawn value="../../bin/pawncc33 %i -O2 -V8192 -v2 -S128 -C- %I -o%o" />
+    </tools>
+    <directories>
+      <include value="include" />
+      <build value="build" />
+      <temp value="temp" />
+    </directories>
+    <motion version="3" />
+    <sound adpcm="false" />
+    <version value="3" />
+  </options>
+
+  <set-default name="MEDIA" value="../../media" />
+
+  <set name="SOUNDS" value="${MEDIA}/sounds" />
+  <set name="MOTIONS" value="${MEDIA}/motions" />
+  <set name="COMMANDS" value="${MEDIA}/commands" />
+  <set name="SCRIPTS" value="." />
+
+  <resources>
+
+    <!-- Sounds -->
+    <sound path="${SOUNDS}/growl.wav" />
+    <sound path="${SOUNDS}/stawded.wav" />
+    <sound path="${SOUNDS}/makayla.wav" />
+    <sound path="${SOUNDS}/yes.wav" />
+    <sound path="${SOUNDS}/no.wav" />
+    <sound path="${SOUNDS}/debug0.wav" />
+    <sound path="${SOUNDS}/debug20.wav" />
+    <sound path="${SOUNDS}/debug40.wav" />
+    <sound path="${SOUNDS}/debug60.wav" />
+    <sound path="${SOUNDS}/debug80.wav" />
+    <sound path="${SOUNDS}/debug100.wav" />
+    <sound path="${SOUNDS}/beep.wav" />
+
+    <!-- Motions -->
+    <motion path="${MOTIONS}/bow.csv" />
+    <motion path="${MOTIONS}/neutral.csv" />
+    <motion path="${MOTIONS}/com_walk_fs.csv" />
+    <motion path="${MOTIONS}/walk.csv" />
+    <motion path="${MOTIONS}/walk_hd.csv" />
+    <motion path="${MOTIONS}/walk_hu.csv" />
+    <motion path="${MOTIONS}/com_walk_fr_2a.csv" />
+    <motion path="${MOTIONS}/com_walk_fl_2a.csv" />
+
+
+    <!-- Commands -->
+<!--    <command path="${COMMANDS}/name.csv" /> -->
+
+    <!-- Scripts -->
+    <script path="${SCRIPTS}/sensors.p" />
+    <script path="${SCRIPTS}/main.p" />
+
+    <!-- User Properties -->
+<!--    <user_property path="my_prop" /> -->
+
+  </resources>
+  
+</upf_project>

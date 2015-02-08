@@ -1,0 +1,3 @@
+<enum max="32767" min="4096" name="sound" namesoff="true" short="snd">
+  <e id=" 4096" name="growl" />
+</enum>
