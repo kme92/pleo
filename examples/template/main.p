@@ -16,7 +16,11 @@
 #include "sounds.inc"
 #include "motions.inc"
 
+new targetKnockedDown = 0;
 new targetCounter = 0;
+new phase = 0;
+new found = 0;
+new threshold = 40;
 
 public init()
 {
@@ -30,31 +34,43 @@ public main()
     print("main::main() enter\n");
 
 //initialize
-    while(true){
-        new headSensor = sensor_get_value(SENSOR_HEAD);
 
-        sound_set_volume(200);
-        goNeutralPosition();
-        playSound(snd_stawded);
+    sound_set_volume(200);
+    goNeutralPosition();
+    playSound(snd_stawded);
 
 //check which side
-            initialize();
+    initialize();
             
 //find first object
-            for(;;){
-                if(targetCounter == 1)
-                    {
-                        new i = 0;
-                        for(i=0;i<15; i++)
-                            {
-                                playMotion(mot_walk_hdr);
-                            }
-                    }
-                findObject();
-                headSensor = sensor_get_value(SENSOR_HEAD);
+    while(true){
+        if(targetCounter == 1 && phase == 0)
+        {
+            new i = 0;
+            for(i=0;i<6; i++)
+            {
+                playMotion(mot_walk_hdr);
+                new rightEdge = moveHeadAndSense(JOINT_NECK_HORIZONTAL, 65);
+                if(rightEdge < 40)
+                {
+                    playMotion(mot_com_walk_fl_1step);
+                }              
+                playMotion(mot_walk_hdr);
             }
-
+            playMotion(mot_com_walk_fl_1step);
+            phase = 1;
         }
+
+        if(targetCounter == 2)
+        {
+            playMotion(mot_com_walk_bs);
+            playMotion(mot_com_walk_bs);
+            playMotion(mot_com_walk_bs);
+            playMotion(mot_com_walk_bs);
+        }
+        findObject();
+    }
+
 
 
     // left in, this generates an 'unreachable code' Pawn warning
@@ -237,45 +253,69 @@ followRightEdge(){
 
 findObject(){
 
-    new found = 0;
-    new threshold = 20;
+    new previouslyFound = found;
+
     moveHead(JOINT_NECK_HORIZONTAL, 7);
  
     new front = moveHeadAndSense(JOINT_NECK_VERTICAL, 20);
 
-    if(front > threshold){
+    if(front > threshold)
+    {
         found = 1;
-        while(front > threshold){
-            walkForwardHU();
-            front = checkObject();
+        walkForwardHU();
+    }
+    else 
+    {
+        new right65 = moveHeadAndSense(JOINT_NECK_HORIZONTAL, 65);
 
+        if (right65 > threshold)
+        {
+            found = 1;
+            frontRightOneStep();
         }
+        else
+        {
+            new right30 = moveHeadAndSense(JOINT_NECK_HORIZONTAL, 30);
 
+            if (right30 > threshold)
+            {
+                found = 1;
+                frontRightOneStep();
+            }
+            else
+            {
+                new left65 = moveHeadAndSense(JOINT_NECK_HORIZONTAL, -65);
+
+                if (left65 > threshold)
+                {
+                    found = 1;
+                    frontLeftOneStep();
+                }
+                else
+                {
+                    new left30 =moveHeadAndSense(JOINT_NECK_HORIZONTAL, -30);
+
+                    if (left30 > threshold)
+                    {
+                        found = 1;
+                        frontLeftOneStep();
+                    }
+                    else
+                    {
+                        found = 0;
+
+                        if(previouslyFound)
+                        {
+                            targetCounter++;
+                            playSound(snd_yeah);
+                        }
+                    }
+                }
+            }
+        }
     }
-
-    new right = moveHeadAndSense(JOINT_NECK_HORIZONTAL, 60);
-
-    if(right > threshold){
-        found = 1;
-        frontRightOneStep();     
-    }
-    
-    new left = moveHeadAndSense(JOINT_NECK_HORIZONTAL, -60);
-
-    if(left > threshold){
-        found = 1;
-        frontLeftOneStep() ;    
-    }
-
+   
     if(!found){
         walkForwardHU();
     }
-    else
-        {
-        targetCounter++;
-        if(targetCounter == 2)
-            {
-            playMotion(mot_com_walk_bs);
-            }
-        }
 }
