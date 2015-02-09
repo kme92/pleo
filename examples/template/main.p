@@ -38,7 +38,6 @@ public main()
     sound_set_volume(200);
     goNeutralPosition();
     playSound(snd_stawded);
-
 //check which side
     initialize();
             
@@ -49,24 +48,43 @@ public main()
             new i = 0;
             for(i=0;i<6; i++)
             {
-                playMotion(mot_walk_hdr);
+                playMotion(mot_walk_hdr, 1);
                 new rightEdge = moveHeadAndSense(JOINT_NECK_HORIZONTAL, 65);
                 if(rightEdge < 40)
                 {
-                    playMotion(mot_com_walk_fl_1step);
+                    playMotion(mot_com_walk_fl_1step, 1);
                 }              
-                playMotion(mot_walk_hdr);
+                playMotion(mot_walk_hdr, 1);
             }
-            playMotion(mot_com_walk_fl_1step);
-            phase = 1;
+            playMotion(mot_com_walk_fl_1step, 1);
+            phase++;
         }
 
-        if(targetCounter == 2)
+        if(targetCounter == 2 && phase == 1)
         {
-            playMotion(mot_com_walk_bs);
-            playMotion(mot_com_walk_bs);
-            playMotion(mot_com_walk_bs);
-            playMotion(mot_com_walk_bs);
+            new backCounter;
+            while(moveHeadAndSense(JOINT_NECK_HORIZONTAL, -65) < 40)
+            { 
+                playMotion(mot_com_walk_bs, 2);
+                playMotion(mot_com_walk_fl_2a, 1);
+            }
+            
+            playMotion(mot_com_walk_fl_1step, 1);
+            phase++;
+        }
+
+        if(targetCounter == 3 && phase == 2)
+        {
+            playMotion(mot_com_walk_fl_1step, 2);
+            playMotion(mot_walk_hu, 3);
+            phase++;
+        }
+
+        if(targetCounter == 4 && phase == 3)
+        {
+            playMotion(mot_walk_blhl, 1);
+            playMotion(mot_walk_hu, 2);
+            phase++;
         }
         findObject();
     }
@@ -85,7 +103,7 @@ public close()
 }
 
 goNeutralPosition() {
-    playMotion(mot_neutral);
+    playMotion(mot_neutral, 1);
 }
 
 initialize(){
@@ -141,22 +159,25 @@ moveHeadAndSense(direction, degrees){
 }
 
 walkForward() {
-    playMotion(mot_walk);
+    playMotion(mot_walk, 1);
 }
 walkForwardHD() {
-    playMotion(mot_walk_hd);
+    playMotion(mot_walk_hd, 1);
 }
 walkForwardHU() {
-    playMotion(mot_walk_hu);
+    playMotion(mot_walk_hu, 1);
 }
 
-playMotion(motion)
+playMotion(motion, times)
     {
-         motion_play(motion);
-    while (motion_is_playing(motion))
+        for (new i=0; i<times; i++)
+        {
+            motion_play(motion);
+            while (motion_is_playing(motion))
             {
                 sleep;
             }
+        }
     }
 
 moveHead(direction, degrees)
@@ -214,6 +235,17 @@ checkObject(){
 }
 
 playSound(sound){
+/*    if (sound == "liljon")
+    {
+        new choice = random(1);
+        if (choice == 0)
+        {
+            sound = snd_yeah;
+        } else if (choice == 1)
+        {
+            sound = snd_what;
+        }
+    }*/
     sound_play(sound);
     while(sound_is_playing(sound)){
         sleep;
@@ -221,19 +253,19 @@ playSound(sound){
 }
 
 frontLeft() {
-    playMotion(mot_com_walk_fl_2a)
+    playMotion(mot_com_walk_fl_2a, 1)
 }
 
 frontRight() {
-    playMotion(mot_com_walk_fr_2a)
+    playMotion(mot_com_walk_fr_2a, 1)
 }
 
 frontLeftOneStep() {
-    playMotion(mot_com_walk_fl_1step);
+    playMotion(mot_com_walk_fl_1step, 1);
 }
 
 frontRightOneStep() {
-    playMotion(mot_com_walk_fr_1step);
+    playMotion(mot_com_walk_fr_1step, 1);
 }
 
 followRightEdge(){
@@ -309,13 +341,13 @@ findObject(){
                             targetCounter++;
                             playSound(snd_yeah);
                         }
+                        else
+                        {
+                            walkForwardHU();  
+                        }
                     }
                 }
             }
         }
-    }
-   
-    if(!found){
-        walkForwardHU();
     }
 }
