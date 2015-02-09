@@ -16,6 +16,7 @@
 #include "sounds.inc"
 #include "motions.inc"
 
+new targetCounter = 0;
 
 public init()
 {
@@ -32,23 +33,28 @@ public main()
     while(true){
         new headSensor = sensor_get_value(SENSOR_HEAD);
 
-        sound_set_volume(100);
+        sound_set_volume(200);
         goNeutralPosition();
         playSound(snd_stawded);
 
 //check which side
-        while(headSensor == 0){
             initialize();
             
 //find first object
-            while(headSensor == 0){
-                findObjectTestNS();
+            for(;;){
+                if(targetCounter == 1)
+                    {
+                        new i = 0;
+                        for(i=0;i<15; i++)
+                            {
+                                playMotion(mot_walk_hdr);
+                            }
+                    }
+                findObject();
                 headSensor = sensor_get_value(SENSOR_HEAD);
             }
+
         }
-    }
-
-
 
 
     // left in, this generates an 'unreachable code' Pawn warning
@@ -62,36 +68,26 @@ public close()
     print("main:close() exit\n");
 }
 
-/*frontLeft() {
-    motion_play(mot_com_walk_fl_2a);
-    while (motion_is_playing(mot_com_walk_fl_2a)) {
-        sleep;
-    }
-}*/
-
 goNeutralPosition() {
-    motion_play(mot_neutral);
-    
-    while (motion_is_playing(mot_neutral)) {
-        sleep;
-    }
+    playMotion(mot_neutral);
 }
 
 initialize(){
-/*    moveHead(JOINT_NECK_HORIZONTAL, 0);*/
-/*    new front = moveHeadAndSense(JOINT_NECK_VERTICAL, -60);*/
-    moveHead(JOINT_NECK_VERTICAL, -35);
+
+    moveHead(JOINT_NECK_VERTICAL, -20);
     new right = moveHeadAndSense(JOINT_NECK_HORIZONTAL, 65);
-    moveHead(JOINT_NECK_VERTICAL, -35);
+    //right = moveHeadAndSense(JOINT_NECK_HORIZONTAL, 65);
+    moveHead(JOINT_NECK_VERTICAL, -20);
     new left = moveHeadAndSense(JOINT_NECK_HORIZONTAL, -65);
+    //left = moveHeadAndSense(JOINT_NECK_HORIZONTAL, -65);
 
     if (right < left){
         frontLeft();
-        frontLeft();   
+        frontLeft();
     }
     if (right > left){        
         frontRight();
-        frontRight();     
+        frontRight();   
     }
 }
 
@@ -99,52 +95,53 @@ moveHeadAndSense(direction, degrees){
 //direction is JOINT_NECK_VERTICAL or JOINT_NECK_HORIZONTAL
 //degrees vertical: 90 to -90
 //degrees horizontal: 50 to -50
-
-    joint_move_to(direction, degrees - 5, 180, angle_degrees);
-
-        while(joint_is_moving(direction))
+    new degreesOffset5 = 0;
+    new degreeOffset1 = 0;
+    new motionSpeed = 180;
+    if(degrees > 0)
         {
-            sleep;
+            degreesOffset5 = degrees - 5;
+            degreeOffset1 = 1;
         }
+    else
+        {
+            degreesOffset5 = degrees + 5;
+            degreeOffset1 = -1;
+        }
+
+    moveHead(direction, degreesOffset5 + degreeOffset1);
 
     playSound(snd_beep);
-    joint_move_to(direction, degrees, 180, angle_degrees);
-        while(joint_is_moving(direction))
-        {
-            sleep;
-        }
 
-    return checkObject() 
+    moveHead(direction, degrees + degreeOffset1);
+    moveHead(direction, degreesOffset5);
+
+    playSound(snd_beep);
+
+    moveHead(direction, degrees);
+
+
+    return checkObject(); 
 }
 
 walkForward() {
-    motion_play(mot_walk);
-    while (motion_is_playing(mot_walk))
-            {
-                sleep;
-            }
+    playMotion(mot_walk);
 }
 walkForwardHD() {
-    motion_play(mot_walk_hd);
-    while (motion_is_playing(mot_walk_hd))
-            {
-                sleep;
-            }
+    playMotion(mot_walk_hd);
 }
 walkForwardHU() {
-    motion_play(mot_walk_hu);
-    while (motion_is_playing(mot_walk_hu))
+    playMotion(mot_walk_hu);
+}
+
+playMotion(motion)
+    {
+         motion_play(motion);
+    while (motion_is_playing(motion))
             {
                 sleep;
             }
-}
-
-walkForwardRight() {
-    motion_play(mot_com_walk_fr_2a);
-    while (motion_is_playing(mot_com_walk_fr_2a)) {
-        sleep;
     }
-}
 
 moveHead(direction, degrees)
 {
@@ -208,17 +205,19 @@ playSound(sound){
 }
 
 frontLeft() {
-    motion_play(mot_com_walk_fl_2a);
-    while (motion_is_playing(mot_com_walk_fl_2a)) {
-        sleep;
-    }
+    playMotion(mot_com_walk_fl_2a)
 }
 
 frontRight() {
-    motion_play(mot_com_walk_fr_2a);
-    while (motion_is_playing(mot_com_walk_fr_2a)) {
-        sleep;
-    }
+    playMotion(mot_com_walk_fr_2a)
+}
+
+frontLeftOneStep() {
+    playMotion(mot_com_walk_fl_1step);
+}
+
+frontRightOneStep() {
+    playMotion(mot_com_walk_fr_1step);
 }
 
 followRightEdge(){
@@ -235,66 +234,48 @@ followRightEdge(){
     else if(rightDetect > leftDetect)*/
 }
 
+
 findObject(){
-    moveHead(JOINT_NECK_HORIZONTAL, 0);
-    moveHead(JOINT_NECK_VERTICAL, 15);
-    new front = sensor_get_value(SENSOR_OBJECT);
-    if(front > 20){
-        while(front > 20){
-            walkForwardHU();
-            front = checkObject();
-    }
-    }
-    else{
-        moveHead(JOINT_NECK_HORIZONTAL, 40);
-        new right = sensor_get_value(SENSOR_OBJECT);
-        if(right > 20){
-            frontRight();    
-        }
-        moveHead(JOINT_NECK_HORIZONTAL, -40);
 
-        new left = sensor_get_value(SENSOR_OBJECT);
-                if(left > 20){
-            frontLeft();    
-        }
-    }
-}
-
-findObjectTestNS(){
-    
+    new found = 0;
     new threshold = 20;
     moveHead(JOINT_NECK_HORIZONTAL, 7);
-    moveHead(JOINT_NECK_VERTICAL, 17);
-    playSound(snd_beep);
-    moveHead(JOINT_NECK_VERTICAL, 20);
-    
-    new front = checkObject();
+ 
+    new front = moveHeadAndSense(JOINT_NECK_VERTICAL, 20);
 
     if(front > threshold){
+        found = 1;
         while(front > threshold){
             walkForwardHU();
             front = checkObject();
+
         }
+
     }
-    moveHead(JOINT_NECK_HORIZONTAL, 55);
-    playSound(snd_beep);
-    moveHead(JOINT_NECK_HORIZONTAL, 60);
-    new right = checkObject();
+
+    new right = moveHeadAndSense(JOINT_NECK_HORIZONTAL, 60);
 
     if(right > threshold){
-        frontRight();     
+        found = 1;
+        frontRightOneStep();     
+    }
+    
+    new left = moveHeadAndSense(JOINT_NECK_HORIZONTAL, -60);
+
+    if(left > threshold){
+        found = 1;
+        frontLeftOneStep() ;    
     }
 
-    moveHead(JOINT_NECK_HORIZONTAL, -55);
-    playSound(snd_beep);
-    moveHead(JOINT_NECK_HORIZONTAL, -60);
-    new left = checkObject();
-        if(left > threshold){
-        frontLeft() ;    
-    }
-
-    if(front < threshold && right < threshold && left < threshold){
-        walkForwardHU();
+    if(!found){
         walkForwardHU();
     }
+    else
+        {
+        targetCounter++;
+        if(targetCounter == 2)
+            {
+            playMotion(mot_com_walk_bs);
+            }
+        }
 }
