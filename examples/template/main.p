@@ -5,7 +5,6 @@
 // save space by packing all strings
 #pragma pack 1
 
-// 
 #include <Log.inc>
 #include <Script.inc>
 #include <Sound.inc>
@@ -16,11 +15,17 @@
 #include "sounds.inc"
 #include "motions.inc"
 
-new targetKnockedDown = 0;
 new targetCounter = 0;
-new phase = 0;
+new phase = 1;
 new found = 0;
 new threshold = 40;
+
+// global motion variables
+new walk_f_1step = mot_com_walk_fl_1step;
+new walk_hd = mot_walk_hdr;
+new walk_f_2a = mot_com_walk_fl_2a;
+new walk_bh = mot_walk_blhl;
+
 
 public init()
 {
@@ -37,13 +42,15 @@ public main()
 
     sound_set_volume(200);
     goNeutralPosition();
+    checkBattery();
     playSound(snd_stawded);
-//check which side
+
+    //check which side
     initialize();
-            
+   
 //find first object
-    while(true){
-        if(targetCounter == 1 && phase == 0)
+    while(true) {
+        if(targetCounter == 1 && phase == 1)
         {
             new i = 0;
             for(i=0;i<6; i++)
@@ -52,44 +59,63 @@ public main()
                 new rightEdge = moveHeadAndSense(JOINT_NECK_HORIZONTAL, 65);
                 if(rightEdge < 40)
                 {
-                    playMotion(mot_com_walk_fl_1step, 1);
+                    playMotion(walk_f_1step, 1);
                 }              
-                playMotion(mot_walk_hdr, 1);
+                playMotion(walk_hd, 1);
             }
-            playMotion(mot_com_walk_fl_1step, 1);
+            playMotion(walk_f_1step, 1);
+
             phase++;
         }
 
-        if(targetCounter == 2 && phase == 1)
+        if(targetCounter == 2 && phase == 2)
         {
             new backCounter;
+            // test taking this out and doing this motion twice
             while(moveHeadAndSense(JOINT_NECK_HORIZONTAL, -65) < 40)
             { 
                 playMotion(mot_com_walk_bs, 2);
-                playMotion(mot_com_walk_fl_2a, 1);
+                playMotion(walk_f_2a, 1);
             }
             
-            playMotion(mot_com_walk_fl_1step, 1);
+            playMotion(walk_f_1step, 1);
             phase++;
         }
 
-        if(targetCounter == 3 && phase == 2)
+        if(targetCounter == 3 && phase == 3)
         {
-            playMotion(mot_com_walk_fl_1step, 2);
-            playMotion(mot_walk_hu, 3);
+            playMotion(walk_f_1step, 1);
+            // 6 goes to far
+            playMotion(mot_walk_hu, 5);
             phase++;
         }
 
-        if(targetCounter == 4 && phase == 3)
+        if(targetCounter == 4 && phase == 4)
         {
-            playMotion(mot_walk_blhl, 1);
-            playMotion(mot_walk_hu, 2);
+            //knocks down second last one
+            playMotion(walk_bh, 2);
+            playMotion(mot_walk_hu, 5);
             phase++;
         }
-        findObject();
+
+        if (targetCounter == 5 && phase == 5)
+        {
+            playSound(snd_yeah);
+            goNeutralPosition();
+            while(true)
+                {
+                playSound(snd_what);
+                playMotion(mot_wag_front_back, 1);    
+                }
+            
+            phase++;
+            //ends program
+        } 
+        else if (phase != 6)
+        {
+            findObject();
+        }
     }
-
-
 
     // left in, this generates an 'unreachable code' Pawn warning
     //print("main::main() exit\n");
@@ -106,6 +132,30 @@ goNeutralPosition() {
     playMotion(mot_neutral, 1);
 }
 
+checkBattery() {
+    new batteryCheck = sensor_get_value(SENSOR_BATTERY);
+    if (batteryCheck >= 0 && batteryCheck < 20 ) {
+        playSound(snd_debug0);
+    }
+    else if (batteryCheck >=20 && batteryCheck < 40) {
+        playSound(snd_debug20);
+    }
+    else if (batteryCheck >=40 && batteryCheck < 60) {
+        playSound(snd_debug40);        
+    }
+    else if (batteryCheck >=60 && batteryCheck < 80) {
+        playSound(snd_debug60);        
+    }
+    else if(batteryCheck >=80 && batteryCheck < 100) {
+        playSound(snd_debug80);        
+    }
+    else {
+        playSound(snd_debug100);
+    }
+
+    return 0;      
+}
+
 initialize(){
 
     moveHead(JOINT_NECK_VERTICAL, -20);
@@ -118,12 +168,22 @@ initialize(){
     if (right < left){
         frontLeft();
         frontLeft();
+        
     }
     if (right > left){        
         frontRight();
-        frontRight();   
+        frontRight();
+        setFirstTurnRight();
     }
 }
+
+setFirstTurnRight()
+    {
+    walk_f_1step = mot_com_walk_fr_1step;
+    walk_hd = mot_walk_hdl;
+    walk_f_2a = mot_com_walk_fr_2a;
+    walk_bh = mot_walk_brhl;
+    }
 
 moveHeadAndSense(direction, degrees){
 //direction is JOINT_NECK_VERTICAL or JOINT_NECK_HORIZONTAL
@@ -133,15 +193,15 @@ moveHeadAndSense(direction, degrees){
     new degreeOffset1 = 0;
     new motionSpeed = 180;
     if(degrees > 0)
-        {
+    {
             degreesOffset5 = degrees - 5;
             degreeOffset1 = 1;
-        }
+    }
     else
-        {
+    {
             degreesOffset5 = degrees + 5;
             degreeOffset1 = -1;
-        }
+    }
 
     moveHead(direction, degreesOffset5 + degreeOffset1);
 
@@ -194,26 +254,9 @@ while(joint_is_moving(direction))
     }
 }
 
-checkFront(){
-    moveHead(JOINT_NECK_VERTICAL, -40);
-    return checkObject();     
-}
-
-checkRight(){
-    moveHead(JOINT_NECK_VERTICAL, -40);
-    moveHead(JOINT_NECK_HORIZONTAL, 65);
-    return checkObject();    
-}
-
-checkLeft(){
-    moveHead(JOINT_NECK_VERTICAL, -40);
-    moveHead(JOINT_NECK_HORIZONTAL, -65);
-    return checkObject();    
-}
-
 checkObject(){
     new detection = sensor_get_value(SENSOR_OBJECT);
-    if (detection >= 0 && detection < 20 ){
+/*    if (detection >= 0 && detection < 20 ){
         playSound(snd_debug0);
     }
     else if(detection >=20 && detection < 40){
@@ -230,7 +273,7 @@ checkObject(){
     }
     else{
         playSound(snd_debug100);
-    }
+    }*/
     return detection;      
 }
 
@@ -267,21 +310,6 @@ frontLeftOneStep() {
 frontRightOneStep() {
     playMotion(mot_com_walk_fr_1step, 1);
 }
-
-followRightEdge(){
-    new frontDetect = checkFront();
-    new rightDetect = checkRight();
-    new leftDetect = checkLeft();
-
-    if(frontDetect > 40 && rightDetect > 40 && leftDetect > 40){
-        walkForward();    
-    }
-/*    else if (rightDetect < leftDetect){
-
-    }
-    else if(rightDetect > leftDetect)*/
-}
-
 
 findObject(){
 
